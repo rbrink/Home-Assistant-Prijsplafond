@@ -71,7 +71,7 @@ class PrijsplafondSensor(Entity):
         total_power_entities,
         total_gas_entity
     ):
-        self.entity_id = f"sensor.{DOMAIN}.{type}"
+        self.entity_id = f"sensor.{DOMAIN}_{type}"
         self.friendly_name = f"{type.capitalize()}gebruik deze maand"
         self._state = 0
 
