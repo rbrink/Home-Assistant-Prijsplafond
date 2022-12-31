@@ -9,6 +9,6 @@
     "issue_tracker": "https://github.com/rbrink/Home-Assistant-Prijsplafond/issues",
     "name": "Prijsplafond",
     "requirements": [],
-    "version": "1.0.0",
+    "version": "1.0.1-alpha",
     "iot_class": "calculated"
 }

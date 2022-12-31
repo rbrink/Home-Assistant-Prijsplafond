@@ -52,4 +52,4 @@ ATTR_THIS_MONTH_CAP = "this_month_cap"
 ATTR_THIS_MONTH_COSTS = "this_month_costs"
 ATTR_UNIT_OF_MEASUREMENT = "unit_of_measurement"
 
-UPDATE_MIN_TIME = timedelta(minute=1)
+UPDATE_MIN_TIME = timedelta(minutes=1)
