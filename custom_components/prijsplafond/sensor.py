@@ -76,7 +76,7 @@ class PrijsplafondSensor(Entity):
         self._state = 0
 
         self._usage = 0
-        self._current_month = datetime.now.month
+        self._current_month = datetime.now().month
 
         if type == 'gas':
             self.this_month_cap = PRICE_CAP_GAS_MONTH[self._current_month]
