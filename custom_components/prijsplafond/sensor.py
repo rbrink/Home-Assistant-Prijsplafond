@@ -98,10 +98,6 @@ class PrijsplafondSensor(Entity):
         return self._name
 
     @property
-    def icon(self):
-        return self._icon
-
-    @property
     def state(self):
         return self._state
 
