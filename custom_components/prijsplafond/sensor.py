@@ -95,7 +95,7 @@ class PrijsplafondSensor(Entity):
 
     @property
     def name(self):
-        return self._name
+        return self.friendly_name
 
     @property
     def state(self):
