@@ -6,6 +6,7 @@ Author: Richard Brink
 
 import voluptuous as vol
 from datetime import datetime
+from _sha1 import sha1
 
 from .const.const import (
     _LOGGER,
@@ -27,12 +28,12 @@ from .const.const import (
     ATTR_PREVIOUS_TOTAL_USAGE
 )
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity, PLATFORM_SCHEMA
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import CONF_RESOURCES
 from homeassistant.util import Throttle
-from homeassistant.helpers.entity import Entity
 from homeassistant.core import HomeAssistant
+from homeassistant.components.recorder import get_instance, history
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -41,10 +42,10 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
-def setup_platform(hass: HomeAssistant, config, add_entities, discovery_info=None):
+async def async_setup_platform(hass: HomeAssistant, config, async_add_entities, discovery_info=None):
     _LOGGER.debug(f"Setup {NAME} sensor")
 
-    add_entities(
+    async_add_entities(
         [
             PrijsplafondSensor(
                 hass,
@@ -64,7 +65,7 @@ def setup_platform(hass: HomeAssistant, config, add_entities, discovery_info=Non
 
     return True
 
-class PrijsplafondSensor(Entity):
+class PrijsplafondSensor(SensorEntity):
     def __init__(
         self,
         hass: HomeAssistant,
@@ -95,16 +96,46 @@ class PrijsplafondSensor(Entity):
             self._sources = total_power_entities
 
     @property
+    def unique_id(self):
+        return str(
+            sha1(
+                ";".join(
+                    [str(type),",".join(self._sources)]
+                ).encode("utf-8")
+            ).hexdigest()
+        )
+
+    @property
     def name(self):
         return self.friendly_name
+
+    @property
+    def native_value(self):
+        return None
+
+    @property
+    def unit_of_measurement(self):
+        return self._unit_of_measurement
+
+    @property
+    def native_unit_of_measurement(self):
+        return None
+
+    @property
+    def icon(self):
+        return None
 
     @property
     def state(self):
         return self._state
 
     @property
-    def unit_of_measurement(self):
-        return self._unit_of_measurement
+    def state_class(self):
+        return STATE_CLASS_MEASUREMENT
+
+    @property
+    def device_class(self):
+        return None
 
     @property
     def extra_state_attributes(self):
@@ -117,14 +148,13 @@ class PrijsplafondSensor(Entity):
         }
 
     @Throttle(UPDATE_MIN_TIME)
-    def update(self):
-        # Fetching the old state in order to calculate new values.
-        old_state = self.hass.states.get(self.entity_id)
-
-        # Calculating total usage based on given sensors.
-        total_usage = -1
+    async def async_update(self):
+        total_usage = 0
         for entity_id in self._sources:
-            state = self.hass.states.get(entity_id)
+            if self._previous_total_usage is 0:
+                state = await self._get_first_recorded_state(entity_id)
+            else:
+                state = self.hass.states.get(entity_id)
 
             if state is None:
                 _LOGGER.error('Unable to find entity "%s"', entity_id)
@@ -133,17 +163,37 @@ class PrijsplafondSensor(Entity):
             # As we need a sum of the sources to calculate the usage.
             total_usage += float(state.state)
 
-        if total_usage == -1:
-            _LOGGER.error('Error while updating sensor "%s"', self.entity_id)
-            return
+        if self._previous_total_usage > 0:
+            old_state = self.hass.states.get(self.entity_id)
+            if old_state is None:
+                self._state = 0
+            else:
+                previous = old_state.attributes.get(ATTR_PREVIOUS_TOTAL_USAGE, 0) 
+                if previous > 0:
+                    self._state += (total_usage - previous)
 
-    	# If no previous state has been found it means the usage state is 0.
-        if old_state is None:
-            self._state = 0
-        else:
-            previous = old_state.attributes.get(ATTR_PREVIOUS_TOTAL_USAGE, 0) 
-            if previous > 0:
-                self._state += (total_usage - previous)
-            
         self._previous_total_usage = total_usage
         self.this_month_costs = self._state * self._price
+
+    async def _get_first_recorded_state(self, entity_id: str):    
+        history_list = await get_instance(self.hass).async_add_executor_job(
+            history.state_changes_during_period,
+            self.hass,
+            datetime.now().today().replace(day=1, hour=0, minute=0, second=0),
+            datetime.now(),
+            str(entity_id),
+            False,
+            False,
+            1
+        )
+        if (
+            entity_id not in history_list.keys()
+            or history_list[entity_id] is None
+            or len(history_list[entity_id]) == 0
+        ):
+            _LOGGER.warning(
+                'Historical data not found for entity "%s". Total usage may be off.', entity_id
+            )
+            return None
+        else:
+            return history_list[entity_id][0]
