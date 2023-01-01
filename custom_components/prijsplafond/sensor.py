@@ -24,6 +24,7 @@ from .const.const import (
     UNIT_OF_MEASUREMENT_GAS,
     UNIT_OF_MEASUREMENT_POWER,
     UPDATE_MIN_TIME,
+    ATTR_PREVIOUS_TOTAL_USAGE
 )
 
 from homeassistant.components.sensor import PLATFORM_SCHEMA
@@ -71,12 +72,12 @@ class PrijsplafondSensor(Entity):
         total_power_entities,
         total_gas_entity
     ):
-        self.entity_id = f"sensor.{DOMAIN}.{type}"
+        self.entity_id = f"sensor.{DOMAIN}_{type}"
         self.friendly_name = f"{type.capitalize()}gebruik deze maand"
         self._state = 0
+        self._previous_total_usage = 0
 
-        self._usage = 0
-        self._current_month = datetime.now.month
+        self._current_month = datetime.now().month
 
         if type == 'gas':
             self.this_month_cap = PRICE_CAP_GAS_MONTH[self._current_month]
@@ -91,15 +92,11 @@ class PrijsplafondSensor(Entity):
             self._unit_of_measurement = UNIT_OF_MEASUREMENT_POWER
 
             self._price = POWER_PRICE
-            self._sources = [total_power_entities]
+            self._sources = total_power_entities
 
     @property
     def name(self):
-        return self._name
-
-    @property
-    def icon(self):
-        return self._icon
+        return self.friendly_name
 
     @property
     def state(self):
@@ -115,12 +112,17 @@ class PrijsplafondSensor(Entity):
             ATTR_FRIENDLY_NAME: self.friendly_name,
             ATTR_THIS_MONTH_CAP: self.this_month_cap,
             ATTR_THIS_MONTH_COSTS: self.this_month_costs,
-            ATTR_UNIT_OF_MEASUREMENT: self._unit_of_measurement
+            ATTR_UNIT_OF_MEASUREMENT: self._unit_of_measurement,
+            ATTR_PREVIOUS_TOTAL_USAGE: self._previous_total_usage
         }
 
     @Throttle(UPDATE_MIN_TIME)
     def update(self):
-        usage = -1
+        # Fetching the old state in order to calculate new values.
+        old_state = self.hass.states.get(self.entity_id)
+
+        # Calculating total usage based on given sensors.
+        total_usage = -1
         for entity_id in self._sources:
             state = self.hass.states.get(entity_id)
 
@@ -129,11 +131,19 @@ class PrijsplafondSensor(Entity):
                 continue
 
             # As we need a sum of the sources to calculate the usage.
-            usage += state
+            total_usage += float(state.state)
 
-        if usage == -1:
+        if total_usage == -1:
             _LOGGER.error('Error while updating sensor "%s"', self.entity_id)
             return
 
-        self._state = usage - self._usage 
+    	# If no previous state has been found it means the usage state is 0.
+        if old_state is None:
+            self._state = 0
+        else:
+            previous = old_state.attributes.get(ATTR_PREVIOUS_TOTAL_USAGE, 0) 
+            if previous > 0:
+                self._state += (total_usage - previous)
+            
+        self._previous_total_usage = total_usage
         self.this_month_costs = self._state * self._price
