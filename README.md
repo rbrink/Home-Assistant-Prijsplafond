@@ -1,5 +1,7 @@
 ## Home Assistant sensor component/integration for the Dutch nutservice pricecap in the Netherlands
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+
 - - -
 
 If you like my work, please buy me a coffee or donate some crypto currencies. This will keep me awake :)
