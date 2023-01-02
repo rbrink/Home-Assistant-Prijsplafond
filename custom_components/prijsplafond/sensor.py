@@ -127,7 +127,7 @@ class PrijsplafondSensor(SensorEntity):
 
     @property
     def state(self):
-        return self._state
+        return round(self._state, 2)
 
     @property
     def state_class(self):
@@ -142,7 +142,7 @@ class PrijsplafondSensor(SensorEntity):
         return {
             ATTR_FRIENDLY_NAME: self.friendly_name,
             ATTR_THIS_MONTH_CAP: self.this_month_cap,
-            ATTR_THIS_MONTH_COSTS: self.this_month_costs,
+            ATTR_THIS_MONTH_COSTS: round(self.this_month_costs, 2),
             ATTR_UNIT_OF_MEASUREMENT: self._unit_of_measurement,
             ATTR_PREVIOUS_TOTAL_USAGE: self._previous_total_usage
         }
