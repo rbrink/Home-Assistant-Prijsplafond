@@ -17,9 +17,9 @@ Example config:
 sensor:
   - platform: prijsplafond
     sources_total_power:
-    - sensor.p1_meter_5c2faf0544ee_total_power_import_t1
-    - sensor.p1_meter_5c2faf0544ee_total_power_import_t2
-    source_total_gas: sensor.p1_meter_5c2faf0544ee_total_gas
+    - sensor.p1_meter_total_power_import_t1
+    - sensor.p1_meter_total_power_import_t2
+    source_total_gas: sensor.p1_meter_total_gas
 ```
 
 ### Known limitations
