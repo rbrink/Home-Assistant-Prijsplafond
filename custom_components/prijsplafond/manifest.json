@@ -4,11 +4,15 @@
     ],
     "config_flow": false,
     "dependencies": [],
+    "after_dependencies": [
+        "history",
+        "recorder"
+    ],
     "documentation": "https://github.com/rbrink/Home-Assistant-Prijsplafond",
     "domain": "prijsplafond",
     "issue_tracker": "https://github.com/rbrink/Home-Assistant-Prijsplafond/issues",
     "name": "Prijsplafond",
     "requirements": [],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "iot_class": "calculated"
 }
