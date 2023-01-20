@@ -10,7 +10,7 @@ from _sha1 import sha1
 
 from .const.const import (
     _LOGGER,
-    CONF_SOURCE_TOTAL_GAS,
+    CONF_SOURCES_TOTAL_GAS,
     CONF_SOURCES_TOTAL_POWER,
     DOMAIN,
     ATTR_FRIENDLY_NAME,
@@ -38,7 +38,7 @@ from homeassistant.components.recorder import get_instance, history
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_SOURCES_TOTAL_POWER, default=[]): cv.entity_ids,
-        vol.Required(CONF_SOURCE_TOTAL_GAS, default=""): cv.entity_id
+        vol.Required(CONF_SOURCES_TOTAL_GAS, default=[]): cv.entity_ids
     }
 )
 
@@ -51,14 +51,14 @@ async def async_setup_platform(hass: HomeAssistant, config, async_add_entities, 
                 hass,
                 "stroom",
                 config.get(CONF_SOURCES_TOTAL_POWER),
-                config.get(CONF_SOURCE_TOTAL_GAS)
+                config.get(CONF_SOURCES_TOTAL_GAS)
             ),
 
             PrijsplafondSensor(
                 hass,
                 "gas",
                 config.get(CONF_SOURCES_TOTAL_POWER),
-                config.get(CONF_SOURCE_TOTAL_GAS)
+                config.get(CONF_SOURCES_TOTAL_GAS)
             )
         ]
     )
@@ -71,7 +71,7 @@ class PrijsplafondSensor(SensorEntity):
         hass: HomeAssistant,
         type,
         total_power_entities,
-        total_gas_entity
+        total_gas_entities
     ):
         self.entity_id = f"sensor.{DOMAIN}_{type}"
         self.friendly_name = f"{type.capitalize()}gebruik deze maand"
@@ -86,7 +86,7 @@ class PrijsplafondSensor(SensorEntity):
             self._unit_of_measurement = UNIT_OF_MEASUREMENT_GAS
 
             self._price = GAS_PRICE
-            self._sources = [total_gas_entity]
+            self._sources = total_gas_entities
         else:
             self.this_month_cap = PRICE_CAP_POWER_MONTH[self._current_month]
             self.this_month_costs = 0
