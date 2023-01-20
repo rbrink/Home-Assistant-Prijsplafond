@@ -1,4 +1,4 @@
-## Home Assistant sensor component/integration for the Dutch nutservice pricecap in the Netherlands
+## Home Assistant sensor component/integration for the Dutch nutservice pricecap (prijsplafond) in the Netherlands
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
