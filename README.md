@@ -27,4 +27,19 @@ Configuration > [Integrations](https://my.home-assistant.io/redirect/integration
 Configuration > [Integrations](https://my.home-assistant.io/redirect/integrations/) > **Prijsplafond** > Configure
 
 ### Useful template examples:
-...TODO...
+```
+- platform: template
+  sensors: 
+
+    # Template sensor to display the current monthly cap.
+    prijsplafond_monthly_gas_cap:
+      friendly_name: "Prijsplafond this month gas cap"
+      unit_of_measurement: "m³"
+      value_template: "{{ state_attr('sensor.prijsplafond_gas', 'this_month_cap') }}"
+
+    # Template sensor to display what this month total costs are.
+    prijsplafond_this_month_costs:
+      friendly_name: "Prijsplafond total costs this month"
+      unit_of_measurement: "EUR"
+      value_template: "..TODO.."
+```
