@@ -1,0 +1,32 @@
+{
+    "title": "Prijsplafond",
+    "config": {
+      "step": {
+        "user": {
+          "title": "Add pricecap sensor",
+          "description": "This integration creates two sensors (one for gas and one for power) to keep track on how far you are with the Dutch pricecap regulations. Each sensor uses the monthly usage as state. Other information like whats the current cap and costs can be found in the attributes.",
+          "data": {
+            "sources_total_power_usage": "Total power usage entities",
+            "sources_total_power_solar": "Total power production entities",
+            "sources_total_gas_usage": "Total gas usage entities"
+          },
+          "data_description": {
+            "sources_total_power_usage": "A list of entities which are used to keep track of your total power usage. Usually the same entities as used in your Energy dashboard (net usage).",
+            "sources_total_power_solar": "A list of entities which are used to keep track of your total solar production. Usually the same entities as used in your Energy dashboard (solar production).",
+            "sources_total_gas_usage": "A list of entities which are used to keep track of your total gas usage. Usually the same entitikes as used in your Energy dashboard (gas usage)."
+          }
+        }
+      }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "data": {
+            "sources_total_power_usage": "[%key:component::prijsplafond::config::step::user::data::sources_total_power_usage%]",
+            "sources_total_power_solar": "[%key:component::prijsplafond::config::step::user::data::sources_total_power_solar%]",
+            "sources_total_gas_usage": "[%key:component::prijsplafond::config::step::user::data::sources_total_gas_usage%]"
+          }
+        }
+      }
+    }
+  }

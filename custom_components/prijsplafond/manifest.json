@@ -2,7 +2,7 @@
     "codeowners": [
         "@rbrink"
     ],
-    "config_flow": false,
+    "config_flow": true,
     "dependencies": [],
     "after_dependencies": [
         "history",
@@ -13,6 +13,6 @@
     "issue_tracker": "https://github.com/rbrink/Home-Assistant-Prijsplafond/issues",
     "name": "Prijsplafond",
     "requirements": [],
-    "version": "1.0.3",
+    "version": "1.0.4",
     "iot_class": "calculated"
 }
