@@ -7,6 +7,11 @@ _LOGGER = logging.getLogger(__name__)
 NAME = "Prijsplafond"
 DOMAIN = "prijsplafond"
 
+# Device classes.
+DEV_CLASS_ENERGY = "energy"
+DEV_CLASS_GAS = "gas"
+DEV_CLASS_SOLAR = "solar"
+
 # Prices and defaults.
 PRICE_CAP_GAS_MONTH = {
     1: 221,
@@ -44,7 +49,9 @@ UNIT_OF_MEASUREMENT_POWER = "kWh"
 
 # Configurational variables.
 CONF_SOURCES_TOTAL_POWER = "sources_total_power"
-CONF_SOURCE_TOTAL_GAS = "source_total_gas"
+CONF_SOURCES_TOTAL_GAS = "sources_total_gas"
+CONF_SOURCES_TOTAL_SOLAR = "sources_total_solar"
+CONF_CARRY_OVER = "carry_over"
 
 # Attributes.
 ATTR_FRIENDLY_NAME = "friendly_name"
