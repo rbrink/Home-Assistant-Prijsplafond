@@ -10,8 +10,21 @@ If you like my work, please buy me a coffee. This will keep me awake :)
 
 - - -
 
-### Manual installation:
-- Copy the files in the /custom_components/prijsplafond/ folder to: [homeassistant]/config/custom_components/prijsplafond/
+### Installation
 
-### Known limitations
-- On startup this integration uses the first recorded state of the configured sources. In case the recording is later than the first day of current month somewhat around 00:00. The calculation might be off.. If anyone knows a workaround for this, please let me know :).
+[HACS](https://hacs.xyz/) > Integrations > Plus (+) > **Prijsplafond**
+
+Or manually copy `prijsplafond` folder from [latest release](https://github.com/rbrink/Home-Assistant-Prijsplafond/releases/latest) to `custom_components` folder in your config folder.
+
+## Configuration
+
+Configuration > [Integrations](https://my.home-assistant.io/redirect/integrations/) > Add Integration > [Prijsplafond](https://my.home-assistant.io/redirect/config_flow_start/?domain=prijsplafond)
+
+*If the integration is not in the list, you need to clear the browser cache.*
+
+## Configuration UI
+
+Configuration > [Integrations](https://my.home-assistant.io/redirect/integrations/) > **Prijsplafond** > Configure
+
+### Useful template examples:
+...TODO...
