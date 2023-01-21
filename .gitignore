@@ -5,3 +5,7 @@
 !README.md
 !custom_components/
 !custom_components/*
+!.vscode/
+!.vscode/*
+!.github/
+!.github/*
