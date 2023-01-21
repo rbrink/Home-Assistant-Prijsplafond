@@ -7,11 +7,6 @@ _LOGGER = logging.getLogger(__name__)
 NAME = "Prijsplafond"
 DOMAIN = "prijsplafond"
 
-# Device classes.
-DEV_CLASS_ENERGY = "energy"
-DEV_CLASS_GAS = "gas"
-DEV_CLASS_SOLAR = "solar"
-
 # Prices and defaults.
 PRICE_CAP_GAS_MONTH = {
     1: 221,
