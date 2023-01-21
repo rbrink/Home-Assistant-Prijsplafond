@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 Sensor component for Prijsplafond
 Author: Richard Brink
 """
 
-import voluptuous as vol
 from datetime import datetime
 from _sha1 import sha1
 
@@ -28,42 +28,20 @@ from .const.const import (
     ATTR_PREVIOUS_TOTAL_USAGE
 )
 
-from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity, PLATFORM_SCHEMA
-import homeassistant.helpers.config_validation as cv
-from homeassistant.const import CONF_RESOURCES
-from homeassistant.util import Throttle
-from homeassistant.core import HomeAssistant
-from homeassistant.components.recorder import get_instance, history
+async def async_setup_platform(
+    hass: HomeAssistant, 
+    config: ConfigType, 
+    async_add_entities: AddEntitiesCallback, 
+    discovery_info: DiscoveryInfoType | None = None,
+) -> None:
+    if discovery_info is None:
+        _LOGGER.error(
+            "This platform is not available to configure "
+            "from 'sensor:' in configuration.yaml"
+        )
+        return
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
-    {
-        vol.Required(CONF_SOURCES_TOTAL_POWER, default=[]): cv.entity_ids,
-        vol.Required(CONF_SOURCES_TOTAL_GAS, default=[]): cv.entity_ids
-    }
-)
-
-async def async_setup_platform(hass: HomeAssistant, config, async_add_entities, discovery_info=None):
-    _LOGGER.debug(f"Setup {NAME} sensor")
-
-    async_add_entities(
-        [
-            PrijsplafondSensor(
-                hass,
-                "stroom",
-                config.get(CONF_SOURCES_TOTAL_POWER),
-                config.get(CONF_SOURCES_TOTAL_GAS)
-            ),
-
-            PrijsplafondSensor(
-                hass,
-                "gas",
-                config.get(CONF_SOURCES_TOTAL_POWER),
-                config.get(CONF_SOURCES_TOTAL_GAS)
-            )
-        ]
-    )
-
-    return True
+        
 
 class PrijsplafondSensor(SensorEntity):
     def __init__(
