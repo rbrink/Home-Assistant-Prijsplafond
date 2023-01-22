@@ -1,9 +1,7 @@
 {
     "name": "Prijsplafond",
-    "content_in_root": false,
     "render_readme": true,
-    "domains": ["sensor"],
-    "country": ["NL"],
+    "country": "NL",
     "homeassistant": "2021.8.0"
   }
   
