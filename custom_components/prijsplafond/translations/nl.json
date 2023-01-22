@@ -4,7 +4,7 @@
       "step": {
         "user": {
           "title": "Prijsplafond sensoren toevoegen",
-          "description": "Deze integratie maakt een 2-tal sensoren (een voor gas en een ander voor stroomverbruik) aan, om bij te houden hoe het staat met ten opzichte van het prijsplafond. De waarde van sensor toont het vebruik per maand. Overige informatie zoals wat is het huidige plafond en de daarbij behorende kosten zijn te vinden in de attributen.",
+          "description": "Deze integratie maakt een 2-tal sensoren (een voor gas en een ander voor stroomverbruik) aan. Deze sernsoren houden bij hoe het staat met het verbruik ten opzichte van het prijsplafond. De waarde van sensor toont het verbruik per maand. Overige informatie zoals: het huidige plafond en de daarbij behorende kosten zijn te vinden in de attributen.",
           "data": {
             "sources_total_power_usage": "Net verbruik entiteiten",
             "sources_total_power_solar": "Zon opbrengst entiteiten",
