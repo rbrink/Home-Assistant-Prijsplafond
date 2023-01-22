@@ -1,0 +1,42 @@
+{
+    "title": "Prijsplafond",
+    "config": {
+      "abort": {
+        "reconf_successful": "Integratie configuratie opgeslagen."
+      },
+      "step": {
+        "user": {
+          "title": "Prijsplafond sensoren toevoegen",
+          "description": "Deze integratie maakt een 2-tal sensoren (een voor gas en een ander voor stroomverbruik) aan. Deze sernsoren houden bij hoe het staat met het verbruik ten opzichte van het prijsplafond. De waarde van sensor toont het verbruik per maand. Overige informatie zoals: het huidige plafond en de daarbij behorende kosten zijn te vinden in de attributen.",
+          "data": {
+            "sources_total_power_usage": "Net verbruik entiteiten",
+            "sources_total_power_solar": "Zon opbrengst entiteiten",
+            "sources_total_gas_usage": "Gas verbruik entiteiten"
+          },
+          "data_description": {
+            "sources_total_power_usage": "Entiteiten die het totale netverbruik beschrijven, denk hierbij aan dal en normaal verbruik.",
+            "sources_total_power_solar": "Entiteiten die het totale zonne opbrengst beschrijven.",
+            "sources_total_gas_usage": "Entiteiten die het gasverbruik beschrijven."
+          }
+        }
+      }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "[%key:component::prijsplafond::config::step::user::title%]",
+          "description": "[%key:component::prijsplafond::config::step::user::description%]",
+          "data": {
+            "sources_total_power_usage": "[%key:component::prijsplafond::config::step::user::data::sources_total_power_usage%]",
+            "sources_total_power_solar": "[%key:component::prijsplafond::config::step::user::data::sources_total_power_solar%]",
+            "sources_total_gas_usage": "[%key:component::prijsplafond::config::step::user::data::sources_total_gas_usage%]"
+          },
+          "data_description": {
+            "sources_total_power_usage": "[%key:component::prijsplafond::config::step::user::data_description::sources_total_power_usage%]",
+            "sources_total_power_solar": "[%key:component::prijsplafond::config::step::user::data_description::sources_total_power_solar%]",
+            "sources_total_gas_usage": "[%key:component::prijsplafond::config::step::user::data_description::sources_total_gas_usage%]"
+          }
+        }
+      }
+    }
+  }

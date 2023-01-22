@@ -1,107 +1,124 @@
-#!/usr/bin/env python3
+from __future__ import annotations
 """
 Sensor component for Prijsplafond
 Author: Richard Brink
 """
 
-import voluptuous as vol
+import asyncio
 from datetime import datetime
+import logging
+from typing import Any
 from _sha1 import sha1
-
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.components.sensor import (
+    RestoreSensor,
+    SensorDeviceClass,
+    STATE_CLASS_MEASUREMENT
+)
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.util import Throttle
+from homeassistant.components.recorder import get_instance, history
 from .const.const import (
     _LOGGER,
-    CONF_SOURCE_TOTAL_GAS,
-    CONF_SOURCES_TOTAL_POWER,
-    DOMAIN,
     ATTR_FRIENDLY_NAME,
     ATTR_THIS_MONTH_CAP,
     ATTR_THIS_MONTH_COSTS,
     ATTR_UNIT_OF_MEASUREMENT,
+    CONF_SOURCES_TOTAL_GAS,
+    CONF_SOURCES_TOTAL_POWER,
+    CONF_SOURCES_TOTAL_SOLAR,
+    DOMAIN,
     GAS_PRICE,
-    NAME,
+    ICON,
     POWER_PRICE,
+    PRECISION,
     PRICE_CAP_GAS_MONTH,
     PRICE_CAP_POWER_MONTH,
     UNIT_OF_MEASUREMENT_GAS,
     UNIT_OF_MEASUREMENT_POWER,
-    UPDATE_MIN_TIME,
-    ATTR_PREVIOUS_TOTAL_USAGE
+    UPDATE_MIN_TIME
 )
 
-from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity, PLATFORM_SCHEMA
-import homeassistant.helpers.config_validation as cv
-from homeassistant.const import CONF_RESOURCES
-from homeassistant.util import Throttle
-from homeassistant.core import HomeAssistant
-from homeassistant.components.recorder import get_instance, history
-
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
-    {
-        vol.Required(CONF_SOURCES_TOTAL_POWER, default=[]): cv.entity_ids,
-        vol.Required(CONF_SOURCE_TOTAL_GAS, default=""): cv.entity_id
-    }
-)
-
-async def async_setup_platform(hass: HomeAssistant, config, async_add_entities, discovery_info=None):
-    _LOGGER.debug(f"Setup {NAME} sensor")
-
+async def async_setup_entry(
+    hass: HomeAssistant,
+    config_entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback
+) -> None:
     async_add_entities(
         [
             PrijsplafondSensor(
                 hass,
-                "stroom",
-                config.get(CONF_SOURCES_TOTAL_POWER),
-                config.get(CONF_SOURCE_TOTAL_GAS)
+                "power",
+                config_entry.data.get(CONF_SOURCES_TOTAL_POWER),
+                config_entry.data.get(CONF_SOURCES_TOTAL_SOLAR)
             ),
 
             PrijsplafondSensor(
                 hass,
                 "gas",
-                config.get(CONF_SOURCES_TOTAL_POWER),
-                config.get(CONF_SOURCE_TOTAL_GAS)
+                config_entry.data.get(CONF_SOURCES_TOTAL_GAS)
             )
         ]
     )
 
-    return True
+async def async_setup_platform(
+    hass: HomeAssistant, 
+    config: ConfigType, 
+    async_add_entities: AddEntitiesCallback, 
+    discovery_info: DiscoveryInfoType | None = None,
+) -> None:
+    if discovery_info is None:
+        _LOGGER.error(
+            "This platform is not available to configure "
+            "from 'sensor:' in configuration.yaml"
+        )
+        return
 
-class PrijsplafondSensor(SensorEntity):
+class PrijsplafondSensor(RestoreSensor):
     def __init__(
-        self,
+        self, 
         hass: HomeAssistant,
         type,
-        total_power_entities,
-        total_gas_entity
+        positive_entities,
+        negative_entities = []
     ):
+        # Common.
         self.entity_id = f"sensor.{DOMAIN}_{type}"
-        self.friendly_name = f"{type.capitalize()}gebruik deze maand"
-        self._state = 0
-        self._previous_total_usage = 0
+        self.friendly_name = f"{type.capitalize()} usage this month"
+        
+        # Sensor specific.
+        self.this_month_costs = 0
+        self._pos_sources = positive_entities
+        self._neg_sources = negative_entities
+        self._type = type
 
         self._current_month = datetime.now().month
 
-        if type == 'gas':
+        if self._type == 'gas':
             self.this_month_cap = PRICE_CAP_GAS_MONTH[self._current_month]
-            self.this_month_costs = 0
-            self._unit_of_measurement = UNIT_OF_MEASUREMENT_GAS
-
             self._price = GAS_PRICE
-            self._sources = [total_gas_entity]
+
+            # Entity specific.
+            self._attr_device_class = SensorDeviceClass.GAS
+            self._attr_unit_of_measurement = UNIT_OF_MEASUREMENT_GAS
         else:
             self.this_month_cap = PRICE_CAP_POWER_MONTH[self._current_month]
-            self.this_month_costs = 0
-            self._unit_of_measurement = UNIT_OF_MEASUREMENT_POWER
-
             self._price = POWER_PRICE
-            self._sources = total_power_entities
+
+            # Entity specific.
+            self._attr_device_class = SensorDeviceClass.ENERGY
+            self._attr_unit_of_measurement = UNIT_OF_MEASUREMENT_POWER
+
+        # Setting state to none as we are waiting for the update.
+        self._state = None
 
     @property
     def unique_id(self):
         return str(
             sha1(
-                ";".join(
-                    [str(type),",".join(self._sources)]
-                ).encode("utf-8")
+                self._type.encode("utf-8")
             ).hexdigest()
         )
 
@@ -110,72 +127,73 @@ class PrijsplafondSensor(SensorEntity):
         return self.friendly_name
 
     @property
-    def native_value(self):
-        return None
-
-    @property
-    def unit_of_measurement(self):
-        return self._unit_of_measurement
-
-    @property
-    def native_unit_of_measurement(self):
-        return None
-
-    @property
     def icon(self):
-        return None
+        return ICON
 
     @property
     def state(self):
-        return round(self._state, 2)
+        if self._state is not None:
+            return round(self._state, PRECISION)
+        return self._state
 
     @property
     def state_class(self):
         return STATE_CLASS_MEASUREMENT
 
     @property
-    def device_class(self):
-        return None
-
-    @property
     def extra_state_attributes(self):
         return {
             ATTR_FRIENDLY_NAME: self.friendly_name,
             ATTR_THIS_MONTH_CAP: self.this_month_cap,
-            ATTR_THIS_MONTH_COSTS: round(self.this_month_costs, 2),
-            ATTR_UNIT_OF_MEASUREMENT: self._unit_of_measurement,
-            ATTR_PREVIOUS_TOTAL_USAGE: self._previous_total_usage
+            ATTR_THIS_MONTH_COSTS: round(self.this_month_costs, PRECISION),
+            ATTR_UNIT_OF_MEASUREMENT: self._attr_unit_of_measurement
         }
 
     @Throttle(UPDATE_MIN_TIME)
     async def async_update(self):
-        total_usage = 0
-        for entity_id in self._sources:
-            if self._previous_total_usage is 0:
-                state = await self._get_first_recorded_state(entity_id)
+        # Checking if we have entered a new month.
+        now_month = datetime.now().month
+        if self._current_month is not now_month:
+            # If so.. change the cap to new values.
+            self._current_month = now_month
+            if self._type == 'gas':
+                self.this_month_cap = PRICE_CAP_GAS_MONTH[self._current_month]
             else:
-                state = self.hass.states.get(entity_id)
+                self.this_month_cap = PRICE_CAP_POWER_MONTH[self._current_month]
 
-            if state is None:
-                _LOGGER.error('Unable to find entity "%s"', entity_id)
-                continue
+        # Positive entities are consumers.
+        pos_usage = 0        
+        for entity_id in self._pos_sources:
+            pos_usage += await self._get_value(entity_id)
 
-            # As we need a sum of the sources to calculate the usage.
-            total_usage += float(state.state)
+        # Negative entities are producers like solar panels.
+        neg_usage = 0
+        for entity_id in self._neg_sources:
+            neg_usage += await self._get_value(entity_id)
 
-        if self._previous_total_usage > 0:
-            old_state = self.hass.states.get(self.entity_id)
-            if old_state is None:
-                self._state = 0
-            else:
-                previous = old_state.attributes.get(ATTR_PREVIOUS_TOTAL_USAGE, 0) 
-                if previous > 0:
-                    self._state += (total_usage - previous)
+        total_usage = pos_usage - neg_usage
+        if total_usage < 0:
+            total_usage = 0           
 
-        self._previous_total_usage = total_usage
+        self._state = total_usage
         self.this_month_costs = self._state * self._price
 
-    async def _get_first_recorded_state(self, entity_id: str):    
+    async def _get_value(self, entity_id):
+        state_old = await self._get_first_recorded_state_in_month(entity_id)
+        if state_old is None:
+            _LOGGER.error('Unable to find historic value for entity "%s". Skipping..', entity_id)
+            return None
+        usage = float(state_old.state)
+
+        # Fetching what the entity has for state now.
+        state_now = self.hass.states.get(entity_id)
+        if state_now is None:
+            _LOGGER.error('Unable to find entity "%s". Skipping..', entity_id)
+            return None
+
+        return float(state_now.state) - usage 
+
+    async def _get_first_recorded_state_in_month(self, entity_id: str):    
         history_list = await get_instance(self.hass).async_add_executor_job(
             history.state_changes_during_period,
             self.hass,
