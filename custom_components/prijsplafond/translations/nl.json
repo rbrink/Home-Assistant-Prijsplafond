@@ -1,6 +1,9 @@
 {
     "title": "Prijsplafond",
     "config": {
+      "abort": {
+        "reconf_successful": "Integratie configuratie opgeslagen."
+      },
       "step": {
         "user": {
           "title": "Prijsplafond sensoren toevoegen",
@@ -21,10 +24,17 @@
     "options": {
       "step": {
         "init": {
+          "title": "[%key:component::prijsplafond::config::step::user::title%]",
+          "description": "[%key:component::prijsplafond::config::step::user::description%]",
           "data": {
             "sources_total_power_usage": "[%key:component::prijsplafond::config::step::user::data::sources_total_power_usage%]",
             "sources_total_power_solar": "[%key:component::prijsplafond::config::step::user::data::sources_total_power_solar%]",
             "sources_total_gas_usage": "[%key:component::prijsplafond::config::step::user::data::sources_total_gas_usage%]"
+          },
+          "data_description": {
+            "sources_total_power_usage": "[%key:component::prijsplafond::config::step::user::data_description::sources_total_power_usage%]",
+            "sources_total_power_solar": "[%key:component::prijsplafond::config::step::user::data_description::sources_total_power_solar%]",
+            "sources_total_gas_usage": "[%key:component::prijsplafond::config::step::user::data_description::sources_total_gas_usage%]"
           }
         }
       }

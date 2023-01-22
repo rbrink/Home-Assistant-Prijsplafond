@@ -58,4 +58,4 @@ ATTR_PREVIOUS_TOTAL_USAGE = "previous_total_usage"
 # Common sensor info.
 UPDATE_MIN_TIME = timedelta(minutes=1)
 ICON = "mdi:counter"
-PRECISION = 3
+PRECISION = 2

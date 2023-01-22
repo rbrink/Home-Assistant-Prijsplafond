@@ -4,52 +4,75 @@ from collections.abc import Mapping
 from typing import Any, cast
 
 import voluptuous as vol
-from homeassistant.const import CONF_NAME
-from homeassistant.helpers.schema_config_entry_flow import (
-    SchemaConfigFlowHandler,
-    SchemaFlowFormStep,
-)
+from homeassistant.config_entries import ConfigEntry, ConfigFlow
+from homeassistant.data_entry_flow import FlowHandler
+from homeassistant.core import callback
 from homeassistant.components.sensor import (
     SensorDeviceClass
 )
 from homeassistant.helpers import selector
 from .const.const import (
     CONF_SOURCES_TOTAL_GAS, CONF_SOURCES_TOTAL_POWER, 
-    CONF_SOURCES_TOTAL_SOLAR, DOMAIN
+    CONF_SOURCES_TOTAL_SOLAR, DOMAIN, NAME
 )
 
-CONFIG_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_SOURCES_TOTAL_POWER): selector.EntitySelector(
-            selector.EntitySelectorConfig(
-                device_class=SensorDeviceClass.ENERGY, multiple=True)
-        ),
-        vol.Optional(CONF_SOURCES_TOTAL_SOLAR, default=[]): selector.EntitySelector(
-            selector.EntitySelectorConfig(
-                device_class=SensorDeviceClass.ENERGY, multiple=True)
-        ),
-        vol.Required(CONF_SOURCES_TOTAL_GAS): selector.EntitySelector(
-            selector.EntitySelectorConfig(
-                device_class=SensorDeviceClass.GAS, multiple=True)
-        )
-    }
-)
+def form(
+    flow: FlowHandler,
+    step_id: str,
+    schema: dict,
+    defaults: dict = None,
+    template: dict = None,
+    error: str = None,
+):
+    """Suppport:
+    - overwrite schema defaults from dict (user_input or entry.options)
+    - set base error code (translations > config > error > code)
+    - set custom error via placeholders ("template": "{error}")
+    """
+    if defaults:
+        for key in schema:
+            if key.schema in defaults:
+                key.default = vol.default_factory(defaults[key.schema])
 
-CONFIG_FLOW = {
-    "user": SchemaFlowFormStep(CONFIG_SCHEMA)
+    if template and "error" in template:
+        error = {"base": "template"}
+    elif error:
+        error = {"base": error}
+
+    return flow.async_show_form(
+        step_id=step_id,
+        data_schema=vol.Schema(schema),
+        description_placeholders=template,
+        errors=error,
+    )
+
+CONFIG_SCHEMA = {
+    vol.Required(CONF_SOURCES_TOTAL_POWER): selector.EntitySelector(
+        selector.EntitySelectorConfig(
+            device_class=SensorDeviceClass.ENERGY, multiple=True)
+    ),
+    vol.Optional(CONF_SOURCES_TOTAL_SOLAR, default=[]): selector.EntitySelector(
+        selector.EntitySelectorConfig(
+            device_class=SensorDeviceClass.ENERGY, multiple=True)
+    ),
+    vol.Required(CONF_SOURCES_TOTAL_GAS): selector.EntitySelector(
+        selector.EntitySelectorConfig(
+            device_class=SensorDeviceClass.GAS, multiple=True)
+    )
 }
 
-OPTIONS_FLOW = {
-    "init": SchemaFlowFormStep(CONFIG_SCHEMA),
-}
+class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
+    async def async_step_import(self, user_input=None):
+        return await self.async_step_user(user_input)
 
-class ConfigFlowHandler(SchemaConfigFlowHandler, domain=DOMAIN):
-    """Handle a config or options flow for the Prijsplafond sensor."""
+    async def async_step_user(self, data=None, error=None):
+        if data is not None:
+            entry = await self.async_set_unique_id(DOMAIN)
+            if entry:
+                self.hass.config_entries.async_update_entry(
+                    entry, data=data, unique_id=self.unique_id
+                )
+                return self.async_abort(reason="reconf_successful")
 
-    config_flow = CONFIG_FLOW
-    options_flow = OPTIONS_FLOW
-
-    def async_config_entry_title(self, options: Mapping[str, Any]) -> str:
-        """Return config entry title."""
-
-        return DOMAIN
+            return self.async_create_entry(title=DOMAIN, data=data)
+        return form(self, "user", CONFIG_SCHEMA)
