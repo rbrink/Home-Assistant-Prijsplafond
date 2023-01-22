@@ -6,6 +6,7 @@ _LOGGER = logging.getLogger(__name__)
 # Integration common info.
 NAME = "Prijsplafond"
 DOMAIN = "prijsplafond"
+ICON = "mdi:counter"
 
 # Prices and defaults.
 PRICE_CAP_GAS_MONTH = {
@@ -46,7 +47,6 @@ UNIT_OF_MEASUREMENT_POWER = "kWh"
 CONF_SOURCES_TOTAL_POWER = "sources_total_power"
 CONF_SOURCES_TOTAL_GAS = "sources_total_gas"
 CONF_SOURCES_TOTAL_SOLAR = "sources_total_solar"
-CONF_CARRY_OVER = "carry_over"
 
 # Attributes.
 ATTR_FRIENDLY_NAME = "friendly_name"
@@ -55,4 +55,7 @@ ATTR_THIS_MONTH_COSTS = "this_month_costs"
 ATTR_UNIT_OF_MEASUREMENT = "unit_of_measurement"
 ATTR_PREVIOUS_TOTAL_USAGE = "previous_total_usage"
 
+# Common sensor info.
 UPDATE_MIN_TIME = timedelta(minutes=1)
+ICON = "mdi:counter"
+PRECISION = 3

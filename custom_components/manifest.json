@@ -14,5 +14,6 @@
     "name": "Prijsplafond",
     "requirements": [],
     "version": "1.0.4",
-    "iot_class": "local_push"
+    "iot_class": "local_push",
+    "integration_type": "hub"
 }
