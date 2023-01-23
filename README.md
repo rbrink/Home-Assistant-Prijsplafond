@@ -22,10 +22,6 @@ Configuration > [Integrations](https://my.home-assistant.io/redirect/integration
 
 *If the integration is not in the list, you need to clear the browser cache.*
 
-## Configuration UI
-
-Configuration > [Integrations](https://my.home-assistant.io/redirect/integrations/) > **Prijsplafond** > Configure
-
 ### Useful template examples:
 ```yaml
 template:
