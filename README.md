@@ -38,7 +38,7 @@ template:
         
       # Template sensor to display what this month total costs are.
       - unique_id: sensor_prijsplafond_this_month_costs
-        name: Prijsplafond Thijs Month Costs
+        name: Prijsplafond This Month Costs
         state: "{{ TO DO }}"
         unit_of_measurement: "EUR"
 ```
