@@ -46,6 +46,8 @@ async def async_setup_entry(
     config_entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback
 ) -> None:
+    _LOGGER.debug("Async setup Prijsplafond")
+    
     async_add_entities(
         [
             PrijsplafondSensor(
@@ -93,6 +95,9 @@ class PrijsplafondSensor(RestoreSensor):
         self._pos_sources = positive_entities
         self._neg_sources = negative_entities
         self._type = type
+
+        _LOGGER.debug(f"[{self.entity_id}] Positive entities: {positive_entities}")
+        _LOGGER.debug(f"[{self.entity_id}] Negative entities: {negative_entities}")
 
         self._current_month = datetime.now().month
 
@@ -165,13 +170,16 @@ class PrijsplafondSensor(RestoreSensor):
         pos_usage = 0        
         for entity_id in self._pos_sources:
             pos_usage += await self._get_value(entity_id)
+        _LOGGER.debug(f"[{self.entity_id}] In update pos_usage is {pos_usage}")
 
         # Negative entities are producers like solar panels.
         neg_usage = 0
         for entity_id in self._neg_sources:
             neg_usage += await self._get_value(entity_id)
+        _LOGGER.debug(f"[{self.entity_id}] In update neg_usage is {neg_usage}")
 
         total_usage = pos_usage - neg_usage
+        _LOGGER.debug(f"[{self.entity_id}] In update total_usage is {total_usage}")
         if total_usage < 0:
             total_usage = 0           
 
@@ -184,20 +192,23 @@ class PrijsplafondSensor(RestoreSensor):
             _LOGGER.error('Unable to find historic value for entity "%s". Skipping..', entity_id)
             return None
         usage = float(state_old.state)
+        _LOGGER.debug(f"Getting first recorded state of this month for: {entity_id} resulted in: {usage}")
 
         # Fetching what the entity has for state now.
         state_now = self.hass.states.get(entity_id)
         if state_now is None:
             _LOGGER.error('Unable to find entity "%s". Skipping..', entity_id)
             return None
+        usage_now = float(state_now.state)
+        _LOGGER.debug(f"Getting current state for {entity_id} resulted in: {usage_now}")
 
-        return float(state_now.state) - usage 
+        return usage_now - usage 
 
     async def _get_first_recorded_state_in_month(self, entity_id: str):    
         history_list = await get_instance(self.hass).async_add_executor_job(
             history.state_changes_during_period,
             self.hass,
-            datetime.now().today().replace(day=1, hour=0, minute=0, second=0),
+            datetime.now().today().replace(day=1, hour=0, minute=0, second=0, microsecond=0),
             datetime.now(),
             str(entity_id),
             False,
