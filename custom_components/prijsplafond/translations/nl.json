@@ -1,9 +1,6 @@
 {
     "title": "Prijsplafond",
     "config": {
-      "abort": {
-        "reconf_successful": "Integratie configuratie opgeslagen."
-      },
       "step": {
         "user": {
           "title": "Prijsplafond sensoren toevoegen",
