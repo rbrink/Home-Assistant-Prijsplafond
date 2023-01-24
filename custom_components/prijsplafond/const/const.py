@@ -6,7 +6,6 @@ _LOGGER = logging.getLogger(__name__)
 # Integration common info.
 NAME = "Prijsplafond"
 DOMAIN = "prijsplafond"
-ICON = "mdi:counter"
 
 # Prices and defaults.
 PRICE_CAP_GAS_MONTH = {
