@@ -1,39 +1,27 @@
 {
-    "title": "Prijsplafond",
-    "config": {
+  "config": {
       "step": {
-        "user": {
-          "title": "Prijsplafond sensoren toevoegen",
-          "description": "Deze integratie maakt een 2-tal sensoren (een voor gas en een ander voor stroomverbruik) aan. Deze sernsoren houden bij hoe het staat met het verbruik ten opzichte van het prijsplafond. De waarde van sensor toont het verbruik per maand. Overige informatie zoals: het huidige plafond en de daarbij behorende kosten zijn te vinden in de attributen.",
-          "data": {
-            "sources_total_power_usage": "Net verbruik entiteiten",
-            "sources_total_power_solar": "Zon opbrengst entiteiten",
-            "sources_total_gas_usage": "Gas verbruik entiteiten"
+          "power_consumers": {
+              "title": "Prijsplafond configuratie (1/3)",
+              "description": "Stroomverbruikers - Selecteer de entiteiten die het stroomverbruik beschrijven.",
+              "data": {
+                  "sources_total_power": "Stroomverbruikers"
+              }
           },
-          "data_description": {
-            "sources_total_power_usage": "Entiteiten die het totale netverbruik beschrijven, denk hierbij aan dal en normaal verbruik.",
-            "sources_total_power_solar": "Entiteiten die het totale zonne opbrengst beschrijven.",
-            "sources_total_gas_usage": "Entiteiten die het gasverbruik beschrijven."
-          }
-        }
-      }
-    },
-    "options": {
-      "step": {
-        "init": {
-          "title": "[%key:component::prijsplafond::config::step::user::title%]",
-          "description": "[%key:component::prijsplafond::config::step::user::description%]",
-          "data": {
-            "sources_total_power_usage": "[%key:component::prijsplafond::config::step::user::data::sources_total_power_usage%]",
-            "sources_total_power_solar": "[%key:component::prijsplafond::config::step::user::data::sources_total_power_solar%]",
-            "sources_total_gas_usage": "[%key:component::prijsplafond::config::step::user::data::sources_total_gas_usage%]"
+          "power_producers": {
+              "title": "Prijsplafond configuratie (2/3)",
+              "description": "Energie opwekkers - Selecteer de entiteiten die de energie opwekkers beschrijven (e.g. zonnepanelen).",
+              "data": {
+                  "sources_total_solar": "Energie opwekkers"
+              }
           },
-          "data_description": {
-            "sources_total_power_usage": "[%key:component::prijsplafond::config::step::user::data_description::sources_total_power_usage%]",
-            "sources_total_power_solar": "[%key:component::prijsplafond::config::step::user::data_description::sources_total_power_solar%]",
-            "sources_total_gas_usage": "[%key:component::prijsplafond::config::step::user::data_description::sources_total_gas_usage%]"
+          "gas_consumers": {
+              "title": "Prijsplafond configuratie (3/3)",
+              "description": "Gasverbruikers - Selecteer de entiteiten die het gasverbruik beschrijven.",
+              "data": {
+                  "sources_total_gas": "Gasverbruikers"
+              }
           }
-        }
       }
-    }
   }
+}

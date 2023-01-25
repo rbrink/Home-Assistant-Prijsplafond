@@ -12,20 +12,30 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.helpers import selector
 from .const.const import (
-    CONF_SOURCES_TOTAL_GAS, CONF_SOURCES_TOTAL_POWER, 
+    _LOGGER, CONF_SOURCES_TOTAL_GAS, CONF_SOURCES_TOTAL_POWER, 
     CONF_SOURCES_TOTAL_SOLAR, DOMAIN, NAME
 )
 
-CONFIG_SCHEMA = vol.Schema(
+SOURCES_TOTAL_POWER_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_SOURCES_TOTAL_POWER): selector.EntitySelector(
             selector.EntitySelectorConfig(
                 device_class=SensorDeviceClass.ENERGY, multiple=True)
-        ),
+        )
+    }
+)
+
+SOURCES_TOTAL_SOLAR_SCHEMA = vol.Schema(
+    {
         vol.Optional(CONF_SOURCES_TOTAL_SOLAR, default=[]): selector.EntitySelector(
             selector.EntitySelectorConfig(
                 device_class=SensorDeviceClass.ENERGY, multiple=True)
-        ),
+        )
+    }
+)
+
+SOURCES_TOTAL_GAS_SCHEMA = vol.Schema(
+    {
         vol.Required(CONF_SOURCES_TOTAL_GAS): selector.EntitySelector(
             selector.EntitySelectorConfig(
                 device_class=SensorDeviceClass.GAS, multiple=True)
@@ -45,26 +55,46 @@ class PrijsplafondConfigFlow(ConfigFlow, domain=DOMAIN):
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
 
-        return await self.async_step_config()
+        return await self.async_step_power_consumers()
     
-    async def async_step_config(self, user_input=None):
+    async def async_step_power_consumers(self, user_input=None):
         if user_input is not None:
-            pass
+            _LOGGER.error(user_input)
+
+            # If we got all power consumers defined, we go to the next step.
+            return self.async_show_form(
+                step_id="power_producers", data_schema=SOURCES_TOTAL_SOLAR_SCHEMA
+            )
+
 
         # Show the power consumers form.
         return self.async_show_form(
-            step_id="power_consumers", data_schema=CONFIG_SCHEMA
+            step_id="power_consumers", data_schema=SOURCES_TOTAL_POWER_SCHEMA
         )
+
+        # # Show the gas consumers form.
+        # return self.async_show_form(
+        #     step_id="gas_consumers", data_schema=SOURCES_TOTAL_GAS_SCHEMA
+        # )
+
+    async def async_step_power_producers(self, user_input=None):
+        if user_input is not None:
+            _LOGGER.error(user_input)
+
+            # If we got all power producers defined, we go to the next step.
+            return self.async_show_form(
+                step_id="gas_consumers", data_schema=SOURCES_TOTAL_GAS_SCHEMA
+            )
 
         # Show the power producers form.
         return self.async_show_form(
-            step_id="power_producers", data_schema=CONFIG_SCHEMA
+            step_id="power_producers", data_schema=SOURCES_TOTAL_SOLAR_SCHEMA
         )
-
-        # Show the gas consumers form.
-        return self.async_show_form(
-            step_id="gas_consumers", data_schema=CONFIG_SCHEMA
-        )
+        
+    async def async_step_gas_consumers(self, user_input=None):
+        if user_input is not None:
+            _LOGGER.error("FINAL STEP..!")
+            _LOGGER.error(user_input)
 
     def _get_data(self):
         return {
