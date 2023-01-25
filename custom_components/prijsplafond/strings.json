@@ -1,0 +1,27 @@
+{
+    "config": {
+        "step": {
+            "power_consumers": {
+                "title": "Prijsplafond configuration",
+                "description": "Power consumers - Select the entities which are used to describe power consumption.",
+                "data": {
+                    "sources_total_power": "Power consumers"
+                }
+            },
+            "power_producers": {
+                "title": "Prijsplafond configuration",
+                "description": "Power producers - Select the entities which are used to describe power production (e.g. solar panels).",
+                "data": {
+                    "sources_total_solar": "Power producers"
+                }
+            },
+            "gas_consumers": {
+                "title": "Prijsplafond configuration",
+                "description": "Gas consumers - Select the entities which are used to describe gas consumption.",
+                "data": {
+                    "sources_total_gas": "Gas consumers"
+                }
+            }
+        }
+    }
+}

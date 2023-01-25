@@ -16,63 +16,59 @@ from .const.const import (
     CONF_SOURCES_TOTAL_SOLAR, DOMAIN, NAME
 )
 
-def form(
-    flow: FlowHandler,
-    step_id: str,
-    schema: dict,
-    defaults: dict = None,
-    template: dict = None,
-    error: str = None,
-):
-    """Suppport:
-    - overwrite schema defaults from dict (user_input or entry.options)
-    - set base error code (translations > config > error > code)
-    - set custom error via placeholders ("template": "{error}")
-    """
-    if defaults:
-        for key in schema:
-            if key.schema in defaults:
-                key.default = vol.default_factory(defaults[key.schema])
+CONFIG_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_SOURCES_TOTAL_POWER): selector.EntitySelector(
+            selector.EntitySelectorConfig(
+                device_class=SensorDeviceClass.ENERGY, multiple=True)
+        ),
+        vol.Optional(CONF_SOURCES_TOTAL_SOLAR, default=[]): selector.EntitySelector(
+            selector.EntitySelectorConfig(
+                device_class=SensorDeviceClass.ENERGY, multiple=True)
+        ),
+        vol.Required(CONF_SOURCES_TOTAL_GAS): selector.EntitySelector(
+            selector.EntitySelectorConfig(
+                device_class=SensorDeviceClass.GAS, multiple=True)
+        )
+    }
+)
 
-    if template and "error" in template:
-        error = {"base": "template"}
-    elif error:
-        error = {"base": error}
+class PrijsplafondConfigFlow(ConfigFlow, domain=DOMAIN):
+    VERSION = 1
 
-    return flow.async_show_form(
-        step_id=step_id,
-        data_schema=vol.Schema(schema),
-        description_placeholders=template,
-        errors=error,
-    )
+    def __init__(self):
+        self._sources_total_power = []
+        self._sources_total_solar = []
+        self._sources_total_gas = []
 
-CONFIG_SCHEMA = {
-    vol.Required(CONF_SOURCES_TOTAL_POWER): selector.EntitySelector(
-        selector.EntitySelectorConfig(
-            device_class=SensorDeviceClass.ENERGY, multiple=True)
-    ),
-    vol.Optional(CONF_SOURCES_TOTAL_SOLAR, default=[]): selector.EntitySelector(
-        selector.EntitySelectorConfig(
-            device_class=SensorDeviceClass.ENERGY, multiple=True)
-    ),
-    vol.Required(CONF_SOURCES_TOTAL_GAS): selector.EntitySelector(
-        selector.EntitySelectorConfig(
-            device_class=SensorDeviceClass.GAS, multiple=True)
-    )
-}
+    async def async_step_user(self, info):
+        if self._async_current_entries():
+            return self.async_abort(reason="single_instance_allowed")
 
-class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
-    async def async_step_import(self, user_input=None):
-        return await self.async_step_user(user_input)
+        return await self.async_step_config()
+    
+    async def async_step_config(self, user_input=None):
+        if user_input is not None:
+            pass
 
-    async def async_step_user(self, data=None, error=None):
-        if data is not None:
-            entry = await self.async_set_unique_id(DOMAIN)
-            if entry:
-                self.hass.config_entries.async_update_entry(
-                    entry, data=data, unique_id=self.unique_id
-                )
-                return self.async_abort(reason="reconf_successful")
+        # Show the power consumers form.
+        return self.async_show_form(
+            step_id="power_consumers", data_schema=CONFIG_SCHEMA
+        )
 
-            return self.async_create_entry(title=DOMAIN, data=data)
-        return form(self, "user", CONFIG_SCHEMA)
+        # Show the power producers form.
+        return self.async_show_form(
+            step_id="power_producers", data_schema=CONFIG_SCHEMA
+        )
+
+        # Show the gas consumers form.
+        return self.async_show_form(
+            step_id="gas_consumers", data_schema=CONFIG_SCHEMA
+        )
+
+    def _get_data(self):
+        return {
+            CONF_SOURCES_TOTAL_POWER: self._sources_total_power,
+            CONF_SOURCES_TOTAL_SOLAR: self._sources_total_solar,
+            CONF_SOURCES_TOTAL_GAS: self._sources_total_gas
+        }
