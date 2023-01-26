@@ -2,26 +2,30 @@
     "config": {
         "step": {
             "power_consumers": {
-                "title": "Prijsplafond configuration",
-                "description": "Power consumers - Select the entities which are used to describe power consumption.",
+                "title": "Prijsplafond configuration (1/3)",
+                "description": "Welcome to the Prijsplafond integration. this integration will help you keep your energy and gas usage below the Dutch pricecap (prijsplafond) as it will provide several sensors containing the current monthly value and attributes containing the cap and current costs. In order to complete step 1, please select all the entities which are used to describe energy consumers and click submit.",
                 "data": {
-                    "sources_total_power": "Power consumers"
+                    "sources_total_power": "Energy consumers"
                 }
             },
             "power_producers": {
-                "title": "Prijsplafond configuration",
-                "description": "Power producers - Select the entities which are used to describe power production (e.g. solar panels).",
+                "title": "Prijsplafond configuration (2/3)",
+                "description": "Energy producers - Select the entities which are used to describe energy production (e.g. solar panels).",
                 "data": {
-                    "sources_total_solar": "Power producers"
+                    "sources_total_solar": "Energy producers"
                 }
             },
             "gas_consumers": {
-                "title": "Prijsplafond configuration",
+                "title": "Prijsplafond configuration (3/3)",
                 "description": "Gas consumers - Select the entities which are used to describe gas consumption.",
                 "data": {
                     "sources_total_gas": "Gas consumers"
                 }
             }
+        },
+        "error": {
+            "invalid_sources_total_power": "Energy consumers cannot be left empty.",
+            "invalid_sources_total_gas": "Gas consumers cannot be left empty."
         }
     }
 }
