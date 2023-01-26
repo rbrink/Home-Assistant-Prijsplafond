@@ -51,6 +51,13 @@ class PrijsplafondConfigFlow(ConfigFlow, domain=DOMAIN):
         self._sources_total_solar = []
         self._sources_total_gas = []
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: ConfigEntry,
+    ) -> PrijplafondOptionsFlow:
+        return PrijplafondOptionsFlow(config_entry)
+
     # Method called when an user adds the integration for the first time.
     # Also when deleted and 're-added'.
     async def async_step_user(self, info):
