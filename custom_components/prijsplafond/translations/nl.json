@@ -31,30 +31,30 @@
     "options": {
         "step": {
             "power_consumers": {
-                "title": "[%key:common::config_flow::step::power_consumers::title%]",
-                "description": "[%key:common::config_flow::step::power_consumers::description%]",
+                "title": "Prijsplafond configuratie (1/3)",
+                "description": "Welkom bij de Prijsplafond integratie. Deze integratie zal proberen jou te helpen onder het Nederlandse prijsplafond te blijven. Dit door het aanbieden van een 2-tal sensoren welke het huidige (maandelijks) verbruik tot nu toe bevatten. Daarnaast bevat de attributen informatie zoals wat is het huidige plafond and de daarbijbehorende kosten. Om stap 1 te voltooien, selecteer alle netverbruikers die het totaal beschrijven en druk op volgende.",
                 "data": {
-                    "sources_total_power": "[%key:common::config_flow::step::power_consumers::data::sources_total_power%]"
+                    "sources_total_power": "Netverbruikers"
                 }
             },
             "power_producers": {
-                "title": "[%key:common::config_flow::step::power_producers::title%]",
-                "description": "[%key:common::config_flow::step::power_producers::description%]",
+                "title": "Prijsplafond configuratie (2/3)",
+                "description": "Energie opwekkers - Selecteer alle energie opwekkers (voorbeeld: zonnepanelen).",
                 "data": {
-                    "sources_total_solar": "[%key:common::config_flow::step::power_producers::data::sources_total_solar%]"
+                    "sources_total_solar": "Energie opwekkers"
                 }
             },
             "gas_consumers": {
-                "title": "[%key:common::config_flow::step::gas_consumers::title%]",
-                "description": "[%key:common::config_flow::step::gas_consumers::description%]",
+                "title": "Prijsplafond configuratie (3/3)",
+                "description": "Gasverbruikers - Selecteer alle gasverbruikers.",
                 "data": {
-                    "sources_total_gas": "[%key:common::config_flow::step::gas_consumers::data::sources_total_gas%]"
+                    "sources_total_gas": "Gasverbruikers"
                 }
             }
         },
         "error": {
-            "invalid_sources_total_power": "[%key:common::config_flow::error::invalid_sources_total_power%]",
-            "invalid_sources_total_gas": "[%key:common::config_flow::error::invalid_sources_total_gas%]"
+            "invalid_sources_total_power": "Selecteer tenminste 1 netverbruiker.",
+            "invalid_sources_total_gas": "Selecteer tenminste 1 gasverbruiker."
         }
     }
 }

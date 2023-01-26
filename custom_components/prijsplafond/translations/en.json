@@ -31,30 +31,30 @@
     "options": {
         "step": {
             "power_consumers": {
-                "title": "[%key:common::config_flow::step::power_consumers::title%]",
-                "description": "[%key:common::config_flow::step::power_consumers::description%]",
+                "title": "Prijsplafond configuration (1/3)",
+                "description": "Welcome to the Prijsplafond integration. This integration will help you keep your energy and gas usage below the Dutch pricecap (prijsplafond) as it will provide several sensors containing the current monthly value and attributes containing the cap and current costs. In order to complete step 1, please select all the entities which are used to describe energy consumers and click next.",
                 "data": {
-                    "sources_total_power": "[%key:common::config_flow::step::power_consumers::data::sources_total_power%]"
+                    "sources_total_power": "Energy consumers"
                 }
             },
             "power_producers": {
-                "title": "[%key:common::config_flow::step::power_producers::title%]",
-                "description": "[%key:common::config_flow::step::power_producers::description%]",
+                "title": "Prijsplafond configuration (2/3)",
+                "description": "Energy producers - Select the entities which are used to describe energy production (e.g. solar panels).",
                 "data": {
-                    "sources_total_solar": "[%key:common::config_flow::step::power_producers::data::sources_total_solar%]"
+                    "sources_total_solar": "Energy producers"
                 }
             },
             "gas_consumers": {
-                "title": "[%key:common::config_flow::step::gas_consumers::title%]",
-                "description": "[%key:common::config_flow::step::gas_consumers::description%]",
+                "title": "Prijsplafond configuration (3/3)",
+                "description": "Gas consumers - Select the entities which are used to describe gas consumption.",
                 "data": {
-                    "sources_total_gas": "[%key:common::config_flow::step::gas_consumers::data::sources_total_gas%]"
+                    "sources_total_gas": "Gas consumers"
                 }
             }
         },
         "error": {
-            "invalid_sources_total_power": "[%key:common::config_flow::error::invalid_sources_total_power%]",
-            "invalid_sources_total_gas": "[%key:common::config_flow::error::invalid_sources_total_gas%]"
+            "invalid_sources_total_power": "Energy consumers cannot be left empty.",
+            "invalid_sources_total_gas": "Gas consumers cannot be left empty."
         }
     }
 }
