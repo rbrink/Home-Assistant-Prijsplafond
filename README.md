@@ -58,14 +58,14 @@ template:
                  (state_attr('sensor.prijsplafond_power', 'this_month_costs') | float) }}"
       icon: mdi:currency-eur
 
-    # With thanks to @pluim300 a sensor to show the remaining gas to be used for this month.
+    # With thanks to @pluim003 a sensor to show the remaining gas to be used for this month.
     - name: 'Prijsplafond remaining gas'
       unit_of_measurement: "m³"
       state: "{{ (state_attr('sensor.prijsplafond_gas', 'this_month_cap') | float | round(2) ) -
                  (states('sensor.prijsplafond_gas') | float | round(2)) }}"
       icon: mdi:gas-cylinder
 
-    # With thanks to @pluim300 a sensor to show the remaining energy to be used for this month.
+    # With thanks to @pluim003 a sensor to show the remaining energy to be used for this month.
     - name: 'Prijsplafond remaining energy'
       unit_of_measurement: "kWh"
       state: "{{ (state_attr('sensor.prijsplafond_power', 'this_month_cap') | float | round(2)) -
