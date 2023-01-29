@@ -10,6 +10,36 @@ If you like my work, please buy me a coffee. This will keep me awake :)
 
 - - -
 
+## How does it work?
+
+On the configuration phase of this integration you are asked to fill in 3 types of entities. At first the energy consumers. Then the energy producers, also known as solar panels or small windmills. As last the gas consumers.
+
+### Calculation/update phase
+For simplicity I only describe the power (yes.. energy) entity as the gas entity is the same. 
+
+Every 5 minutes the integration call it's update method in where I retrieve the historic value of the given energy consumers.
+If you have provided only 1 consumer I will get the historic value for that one, but as a lot of Dutchies have multiple meters (dal and normal) I get both (as long as you have selected them). So lets say at the first of this month the value at 00:00:00 for either meters is 1000 and 1000. So total usage is 2000 at the start of this month. Then I get the same values but instead of the start of this month, the sensor fetches it for the current date and time. Resulting in a higher number. So now it's easy to calculate the usage as it would have been value now - value at the first of this month. 
+
+If you have provided energy producer entities. I substract that of the consumed value. 
+
+### No total consumption counter (e.g. when using the zonneplan-one integration)
+
+As one user mentioned to me, some don't have a total counter of what they have been consuming. Only they have sensors like 'Electricity consumed today' and 'Gas consumption today'. Using those sensors with this integration will result in giving back faulty values as these values get reset to 0 every day.. Obviously they are only todays values. In order to overcome that Home Assistant offers a helper to keep counting the grid consumption. 
+
+This helper is called: [Utility meter](https://www.home-assistant.io/integrations/utility_meter/)
+
+To enable through yaml:
+```yaml
+utility_meter:
+  zonneplan_p1_total_energy:
+    name: Zonneplan P1 total energy
+    source: YOUR ELECTRICITY CONSUMED TODAY ENTITY
+```
+
+If you want to do it via the graphical interface. Please go to Configuration > [Helpers](https://my.home-assistant.io/redirect/helpers/) > Plus (+) > **Utility meter (or in Dutch: Nutsmeter)** and only fill in the name and the input sensor.
+
+Then after you've added the total consumer entity use that in the configuration of Prijsplafond.
+
 ## Installation
 
 ### HACS
