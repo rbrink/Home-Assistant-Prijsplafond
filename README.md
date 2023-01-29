@@ -38,6 +38,8 @@ utility_meter:
 
 If you want to do it via the graphical interface. Please go to Configuration > [Helpers](https://my.home-assistant.io/redirect/helpers/) > Plus (+) > **Utility meter (or in Dutch: Nutsmeter)** and only fill in the name and the input sensor.
 
+*NOTE: If added via the UI. It may be possible that the entities are not yet visible thoughout the entire system. You can overcome this by manually typing in the entity id in the config flow.*
+
 Then after you've added the total consumer entity use that in the configuration of Prijsplafond.
 
 ## Installation
