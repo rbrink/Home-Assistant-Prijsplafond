@@ -185,14 +185,20 @@ class PrijsplafondSensor(RestoreSensor):
 
         self._state = total_usage
         self.this_month_costs = self._state * self._price
+        # To make sure we don't get negative costs..
+        if self.this_month_costs < 0: self.this_month_costs = 0
 
     async def _get_value(self, entity_id):
         state_old = await self._get_first_recorded_state_in_month(entity_id)
         if state_old is None:
             _LOGGER.error('Unable to find historic value for entity "%s". Skipping..', entity_id)
             return None
-        usage = float(state_old.state)
-        _LOGGER.debug(f"Getting first recorded state of this month for: {entity_id} resulted in: {usage}")
+        try:
+            usage = float(state_old.state)
+            _LOGGER.debug(f"Getting first recorded state of this month for: {entity_id} resulted in: {usage}")
+        except ValueError:
+            _LOGGER.warning(f"Unable to convert the first recorded state of this month for: {entity_id} to float..Value is: {state_old.state}. Setting usage to 0.")
+            usage = 0
 
         # Fetching what the entity has for state now.
         state_now = self.hass.states.get(entity_id)
