@@ -1,4 +1,6 @@
 from __future__ import annotations
+from datetime import datetime, timedelta
+from homeassistant.util import dt as dt_util
 """
 Sensor component for Prijsplafond
 Author: Richard Brink
@@ -157,8 +159,8 @@ class PrijsplafondSensor(RestoreSensor):
     @Throttle(UPDATE_MIN_TIME)
     async def async_update(self):
         # Checking if we have entered a new month.
-        now_month = datetime.now().month
-        if self._current_month is not now_month:
+        now_month = dt_util.now().month
+        if self._current_month != now_month:
             # If so.. change the cap to new values.
             self._current_month = now_month
             if self._type == 'gas':
@@ -167,7 +169,7 @@ class PrijsplafondSensor(RestoreSensor):
                 self.this_month_cap = PRICE_CAP_POWER_MONTH[self._current_month]
 
         # Positive entities are consumers.
-        pos_usage = 0        
+        pos_usage = 0
         for entity_id in self._pos_sources:
             pos_usage += await self._get_value(entity_id)
         _LOGGER.debug(f"[{self.entity_id}] In update pos_usage is {pos_usage}")
@@ -181,11 +183,11 @@ class PrijsplafondSensor(RestoreSensor):
         total_usage = pos_usage - neg_usage
         _LOGGER.debug(f"[{self.entity_id}] In update total_usage is {total_usage}")
         if total_usage < 0:
-            total_usage = 0           
+            total_usage = 0
 
         self._state = total_usage
         self.this_month_costs = self._state * self._price
-        # To make sure we don't get negative costs..
+        # To make sure we don't get negative costs.
         if self.this_month_costs < 0: self.this_month_costs = 0
 
     async def _get_value(self, entity_id):
@@ -210,12 +212,14 @@ class PrijsplafondSensor(RestoreSensor):
 
         return usage_now - usage 
 
-    async def _get_first_recorded_state_in_month(self, entity_id: str):    
+    async def _get_first_recorded_state_in_month(self, entity_id: str):
+        start_time = dt_util.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_time = dt_util.now()
         history_list = await get_instance(self.hass).async_add_executor_job(
             history.state_changes_during_period,
             self.hass,
-            datetime.now().today().replace(day=1, hour=0, minute=0, second=0, microsecond=0),
-            datetime.now(),
+            start_time,
+            end_time,
             str(entity_id),
             False,
             False,
