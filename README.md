@@ -10,6 +10,10 @@ If you like my work, please buy me a coffee. This will keep me awake :)
 
 - - -
 
+### !!! This project is no longer maintained as the Dutch pricecap (prijsplafond) period has come to an end. 
+
+- - -
+
 ## How does it work?
 
 On the configuration phase of this integration you are asked to fill in 3 types of entities. At first the energy consumers. Then the energy producers, also known as solar panels or small windmills. As last the gas consumers.
